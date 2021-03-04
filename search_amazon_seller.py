@@ -9,7 +9,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 import time 
 
 CONFIGURATIONS = {
-    'SIGN_IN_CONDITIONS':'//h1[contains(text(),"Sign-In")]'
+    'SIGN_IN_CONDITIONS':'//h1[contains(text(),"Sign-In")]',
 }
 class AmazonSellerCrawl():
 
@@ -33,6 +33,31 @@ class AmazonSellerCrawl():
         else:
             return False
     
+    def get_reporting_range(self, driver, range_='Daily'):
+        '''Options for range are
+        * Daily
+        * Weekly
+        * Monthly
+        * Quarterly
+        It will select the the data and download the file
+        '''
+        time.sleep(1)
+        driver.find_element_by_xpath("//span[contains(text(),'Reporting Range')]/parent::span/parent::span/parent::button").click()
+        driver.find_element_by_xpath(f'//li[@aria-label="{range_}"]').click()
+
+        return driver
+
+
+    def search_item(self, driver, search_item='iphone'):
+        '''Insert the search terms in the file
+        '''
+        time.sleep(2)
+        driver.find_element_by_xpath('//input[contains(@class,"searchbar")]').send_keys(search_item)
+        breakpoint()
+        driver.find_element_by_xpath('//span[contains(text(),"Apply")]/parent::button')
+        time.sleep(3)
+        return driver
+        #
 
 
 
@@ -43,9 +68,28 @@ class AmazonSellerCrawl():
         time.sleep(1)
         print("Trying to login for amazon")
         time.sleep(1)
+        driver.find_element_by_name('email').send_keys(USERNAME)
+        time.sleep(1)
+        driver.find_element_by_name('password').send_keys(PASSWORD)
+        driver.find_element_by_name('rememberMe').click()
+        time.sleep(1)
+        driver.find_element_by_xpath("//span[@class='a-button-inner']").click()
         breakpoint()
+        # we need to perform some manual_task here  
+        # Now choosing the range
+        return driver
 
     
+    def download_excel_file(self, driver):
+        '''This is for downloading the excel_file
+        '''
+        #selecting the download 
+        time.sleep(1)
+        driver.find_element_by_xpath('//span[contains(text(),"Download")]/parent::button').click()
+        driver.find_element_by_xpath('//li[contains(@aria-label,"As Excel Workbook")]').click()
+        return driver
+
+
     def search_amazon_seller(self):
         '''
         This is for searching the amazon
@@ -55,15 +99,18 @@ class AmazonSellerCrawl():
         if self.check_sign_in_condition(driver):
             print("Need to login first with amazon credentials")
             driver = self.login_amazon_account(driver)
-            driver.find_element_by_name('email').send_keys(USERNAME)
-            time.sleep(1)
-            driver.find_element_by_name('password').send_keys(PASSWORD)
-            driver.find_element_by_name('rememberMe').click()
+            
             #checkbox
 
             time.sleep(1)
-            driver.find_element_by_xpath("//span[@class='a-button-inner']").click()
+            # get_daily
+            driver = self.get_reporting_range(driver=driver)
+            time.sleep(1)
+            driver = self.search_item(driver=driver)
+            time.sleep(1)
+            driver = self.download_excel_file(driver=driver)
             breakpoint()
+            
         breakpoint()
 
 
