@@ -33,7 +33,7 @@ class AmazonSellerCrawl():
         else:
             return False
     
-    def get_reporting_range(self, driver, range_='Daily'):
+    def get_reporting_range(self, driver, range_='Weekly'):
         '''Options for range are
         * Daily
         * Weekly
@@ -53,7 +53,6 @@ class AmazonSellerCrawl():
         '''
         time.sleep(2)
         driver.find_element_by_xpath('//input[contains(@class,"searchbar")]').send_keys(search_item)
-        breakpoint()
         driver.find_element_by_xpath('//span[contains(text(),"Apply")]/parent::button')
         time.sleep(3)
         return driver
