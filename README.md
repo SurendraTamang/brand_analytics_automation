@@ -19,3 +19,13 @@ It will automatically add the login with your user account but due to complexity
 ![](/opt_generator.JPG)
 
 You mean to manally add the OTP code. Sometimes we may need to solve the captcha text and re enter the pass. Once Solving it we may type c in our terminal from where we have run our python script
+
+
+
+
+After typing c it will again continue our code.
+
+
+
+
+
