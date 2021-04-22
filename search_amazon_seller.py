@@ -25,7 +25,10 @@ class AmazonSellerCrawl():
         options = webdriver.ChromeOptions()
         options.add_argument(f'--user-data-dir={USER_DATA_PATH}')
         options.add_argument(f'--profile-directory=Profile 6')
-        driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe", options=options)
+        try:
+            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe", options=options)
+        except:
+            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe")
         driver.get(self.url)
         driver.maximize_window()
         return driver 

@@ -25,6 +25,9 @@ You mean to manally add the OTP code. Sometimes we may need to solve the captcha
 
 After typing c it will again continue our code.
 
+#### profile set up
+For adding the profile to work with out OTP I have done the profile
+
 
 
 
