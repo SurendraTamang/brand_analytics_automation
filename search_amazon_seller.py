@@ -13,8 +13,12 @@ from selenium.webdriver.chrome.options import Options
 CONFIGURATIONS = {
     'SIGN_IN_CONDITIONS':'//h1[contains(text(),"Sign-In")]',
 }
-USER_DATA_PATH = 'C:\\Users\\Vision\\AppData\\Local\\Google\\Chrome\\User Data'
+USER_DATA_PATH = "C:\\Users\\Avinash\\AppData\\Local\\Google\\Chrome\\User Data"
+print(USER_DATA_PATH)
+# jata rakhya rakhexa teta nai
 
+CHROME_DRIVER_PATH = "C:\Program Files (x86)\chromedriver.exe"
+print(CHROME_DRIVER_PATH)
 class AmazonSellerCrawl():
 
     def __init__(self, url):
@@ -24,11 +28,14 @@ class AmazonSellerCrawl():
         
         options = webdriver.ChromeOptions()
         options.add_argument(f'--user-data-dir={USER_DATA_PATH}')
-        options.add_argument(f'--profile-directory=Profile 6')
+        options.add_argument(f'--profile-directory=Default')
         try:
-            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe", options=options)
-        except:
-            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe")
+            
+            driver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,options=options)
+            
+        except Exception as e:
+            breakpoint()
+            driver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH)
         driver.get(self.url)
         driver.maximize_window()
         return driver 
@@ -44,7 +51,7 @@ class AmazonSellerCrawl():
         else:
             return False
     
-    def get_reporting_range(self, driver, range_='Weekly'):
+    def get_reporting_range(self, driver):
         '''Options for range are
         * Daily
         * Weekly
@@ -52,10 +59,32 @@ class AmazonSellerCrawl():
         * Quarterly
         It will select the the data and download the file
         '''
+        range_='Weekly'
         driver.get('https://sellercentral.amazon.com/analytics/dashboard/searchTerms?iphone')
         time.sleep(1)
         driver.find_element_by_xpath("//span[contains(text(),'Reporting Range')]/parent::span/parent::span/parent::button").click()
         driver.find_element_by_xpath(f'//li[@data-testid="{range_.upper()}"]').click()
+
+        time.sleep(1)
+
+        return driver
+    def get_reporting_range_daily(self, driver, dailydata=1):
+        '''Options for range are
+        * Daily
+        * Weekly
+        * Monthly
+        * Quarterly
+        It will select the the data and download the file
+        '''
+        range_='Daily'
+        driver.get('https://sellercentral.amazon.com/analytics/dashboard/searchTerms?iphone')
+        time.sleep(1)
+        driver.find_element_by_xpath("//span[contains(text(),'Reporting Range')]/parent::span/parent::span/parent::button").click()
+        driver.find_element_by_xpath(f'//li[@data-testid="{range_.upper()}"]').click()
+        driver.find_element_by_xpath('//*[@id="dashboard-filter-periodPicker"]/div/div/div[1]/input').click()
+        driver.find_element_by_xpath(f'/html/body/div[2]/div/div[2]/div[2]/div[1]/div[{dailydata}]').click()
+
+        time.sleep(1) 
 
         return driver
 
@@ -99,6 +128,7 @@ class AmazonSellerCrawl():
         time.sleep(1)
         driver.find_element_by_xpath('//span[contains(text(),"Download")]/parent::button').click()
         driver.find_element_by_xpath('//li[contains(@aria-label,"As Excel Workbook")]').click()
+
         return driver
 
 
@@ -118,17 +148,38 @@ class AmazonSellerCrawl():
             driver.execute_script("window.open()")
             window_after = driver.window_handles[1]
             window_before = driver.window_handles[0]
-            search_list = ['iphone']
+            search_list = ['iphone','imac','samsung']
             for search_item in search_list:
-                driver.switch_to_window(window_after)
+                driver.switch_to.window(window_after)
                 time.sleep(1)
                 # get_daily
                 driver = self.get_reporting_range(driver=driver)
                 time.sleep(1)
                 driver = self.search_item(driver=driver, search_item=search_item)
                 time.sleep(1)
+
                 driver = self.download_excel_file(driver=driver)
-                driver.switch_to_window(window_before)
+
+                time.sleep(20)
+                alert=driver.switch_to.alert
+                alert.accept()
+
+                for dailydata in range(1,8):
+                    driver.switch_to.window(window_after)
+                    time.sleep(1)
+
+                    driver = self.get_reporting_range_daily(driver=driver,dailydata=dailydata)
+                    time.sleep(1)
+                    driver = self.search_item(driver=driver, search_item=search_item)
+                    time.sleep(1)
+
+                    driver = self.download_excel_file(driver=driver)
+
+                    time.sleep(30)
+                    alert=driver.switch_to.alert
+                    alert.accept()
+            
+                #driver.switch_to.window(window_before)
             breakpoint()
             
         breakpoint()
@@ -142,5 +193,8 @@ if __name__ == '__main__':
     URL = 'https://sellercentral.amazon.com/analytics/dashboard/searchTerms'
     amazon_driver = AmazonSellerCrawl(url=URL)
     amazon_driver.search_amazon_seller()
+
+
+    
     breakpoint()
 
