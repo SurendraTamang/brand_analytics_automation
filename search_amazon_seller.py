@@ -14,6 +14,9 @@ CONFIGURATIONS = {
     'SIGN_IN_CONDITIONS':'//h1[contains(text(),"Sign-In")]',
 }
 USER_DATA_PATH = 'C:\\Users\\Vision\\AppData\\Local\\Google\\Chrome\\User Data'
+# jata rakhya rakhexa teta nai
+
+CHROME_DRIVER_PATH = "C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe"
 
 class AmazonSellerCrawl():
 
@@ -22,13 +25,16 @@ class AmazonSellerCrawl():
 
     def start_driver(self):
         
+        # Need to add 
         options = webdriver.ChromeOptions()
         options.add_argument(f'--user-data-dir={USER_DATA_PATH}')
         options.add_argument(f'--profile-directory=Profile 6')
         try:
-            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe", options=options)
-        except:
-            driver = webdriver.Chrome(executable_path="C:\\Users\\Vision\\Downloads\\chromedriver_win32\\chromedriver.exe")
+            driver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH,
+            chrome_options=options)
+        except Exception as e:
+            breakpoint()
+            driver = webdriver.Chrome(executable_path=CHROME_DRIVER_PATH)
         driver.get(self.url)
         driver.maximize_window()
         return driver 
@@ -128,10 +134,11 @@ class AmazonSellerCrawl():
                 driver = self.search_item(driver=driver, search_item=search_item)
                 time.sleep(1)
                 driver = self.download_excel_file(driver=driver)
+                time.sleep(20)
+                alert=driver.switch_to.alert
+                alert.accept()
                 driver.switch_to_window(window_before)
-            breakpoint()
-            
-        breakpoint()
+           
 
 
 
